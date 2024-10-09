@@ -16,6 +16,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     minLength: 6,
   },
+  img: {
+    type: String,
+  },
   address: {
     type: String,
   },

@@ -110,3 +110,45 @@ exports.getAllUsers = async (req, res) => {
     });
   }
 };
+
+exports.updateUser = async (req, res) => {
+    try {
+      const { name, email, password, img, address, phone } = req.body;
+  
+      let user = await User.findById(req.params.id);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+  
+      const updatedData = {
+        name: name || user.name,
+        email: email || user.email,
+        img: img || user.img,
+        address: address || user.address,
+        phone: phone || user.phone,
+        updatedAT: Date.now(),
+      };
+  
+      if (password) {
+        const salt = await bcrypt.genSalt(10);
+        updatedData.password = await bcrypt.hash(password, salt);
+      }
+  
+      user = await User.findByIdAndUpdate(req.params.id, updatedData, { new: true });
+  
+      res.status(200).json({
+        success: true,
+        data: user,
+        message: "User updated successfully",
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  };
