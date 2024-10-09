@@ -2,7 +2,7 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator");
-const jwtsecret = process.env.JWT_SECRET
+const jwtsecret = process.env.JWT_SECRET;
 
 exports.createUser = [
   body("email", "Please enter a valid email").isEmail(),
@@ -78,7 +78,7 @@ exports.loginUser = [
         },
       };
 
-      const authToken = jwt.sign(data,jwtsecret);
+      const authToken = jwt.sign(data, jwtsecret);
       res.status(200).json({
         success: true,
         authToken: authToken,
@@ -93,3 +93,20 @@ exports.loginUser = [
     }
   },
 ];
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const response = await User.find();
+    res.status(200).json({
+      success: true,
+      data: response,
+      message: "find all user successfully",
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
