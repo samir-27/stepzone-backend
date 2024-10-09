@@ -1,11 +1,25 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const bodyParser = require('body-parser')
+const morgan = require('morgan')
+const DBconnection = require('./db')
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+require('dotenv/config')
+
+const port = process.env.PORT || 4000;
+
+//midleware
+app.use(bodyParser.json())
+app.use(morgan('tiny'))
+
+DBconnection();
+
+const userRoutes  = require("./routes/userRoutes")
+
+
+app.use("/api/v1",userRoutes)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
