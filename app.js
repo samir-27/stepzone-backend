@@ -15,9 +15,10 @@ app.use(morgan('tiny'))
 DBconnection();
 
 const userRoutes  = require("./routes/userRoutes")
-
+const productRoutes = require("./routes/productRoutes")
 
 app.use("/api/v1",userRoutes)
+app.use("/api/v1",productRoutes)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
