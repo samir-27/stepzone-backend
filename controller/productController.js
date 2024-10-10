@@ -126,3 +126,26 @@ exports.updateProduct = async (req, res) => {
     });
   }
 };
+
+exports.deleteProduct = async(req,res) => {
+  try {
+      const response = await Product.findByIdAndDelete(req.params.id)
+      if (!response) {
+          return res.status(404).json({
+              success: false,
+              message: "User not found", 
+          });
+      }
+      res.status(200).json({
+          success: true,
+          message: "product deleted successfully",
+      });
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({
+          success: false,
+          message: "error while deleting the user.",
+          error: err.message,
+      });
+  }
+}
