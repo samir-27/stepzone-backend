@@ -3,6 +3,6 @@ const { createProduct, updateProduct, getProducts, deleteProduct } = require('..
 const router = express.Router()
 
 router.post("/addproduct",createProduct)
-
+router.get("/products",getAllProducts)
 
 module.exports = router;
