@@ -48,19 +48,81 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-exports.getAllProducts = async (req,res) => {
-    try {
-        const response = await Product.find()
-        res.status(200).json({
-            success: true,
-            data: response,
-            message: "find all product successfully",
-          });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({
-          success: false,
-          message: err.message,
-        });
+exports.getAllProducts = async (req, res) => {
+  try {
+    const response = await Product.find();
+    res.status(200).json({
+      success: true,
+      data: response,
+      message: "find all product successfully",
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const {
+      name,
+      description,
+      image,
+      subimage1,
+      subimage2,
+      subimage3,
+      price,
+      brand,
+      color,
+      category,
+      size,
+      avg_rating,
+      purchases,
+    } = req.body;
+
+    let product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
     }
-}
+
+    const updatedData = {
+      name: name || product.name,
+      description: description || product.description,
+      image: image || product.image,
+      subimage1: subimage1 || product.subimage1,
+      subimage2: subimage1 || product.subimage2,
+      subimage1: subimage3 || product.subimage3,
+      price: price || product.price,
+      brand: brand || product.brand,
+      color: color || product.color,
+      category: category || product.category,
+      size: size || product.size,
+      avg_rating: avg_rating || product.avg_rating,
+      purchases: purchases || product.purchases,
+      updatedAt: Date.now(),
+    };
+
+    product = await Product.findByIdAndUpdate(req.params.id, updatedData, {
+      new: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: product,
+      message: "product updated Successfully",
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
