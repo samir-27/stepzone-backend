@@ -50,11 +50,25 @@ exports.createProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const response = await Product.find();
+    const { brand, category, color } = req.query;
+    const queryObject = {};
+
+    if (category) {
+      queryObject.category = { $regex: category, $options: "i" };
+    }
+    if (brand) {
+      queryObject.brand = { $regex: brand, $options: "i" };
+    }
+    if (color) {
+      queryObject.color = { $regex: color, $options: "i" };
+    }
+
+    console.log(queryObject);
+    const response = await Product.find(queryObject);
     res.status(200).json({
       success: true,
       data: response,
-      message: "find all product successfully",
+      message: "Products retrieved successfully",
     });
   } catch (err) {
     console.log(err);
@@ -64,6 +78,7 @@ exports.getAllProducts = async (req, res) => {
     });
   }
 };
+
 
 exports.updateProduct = async (req, res) => {
   try {
@@ -127,25 +142,25 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-exports.deleteProduct = async(req,res) => {
+exports.deleteProduct = async (req, res) => {
   try {
-      const response = await Product.findByIdAndDelete(req.params.id)
-      if (!response) {
-          return res.status(404).json({
-              success: false,
-              message: "User not found", 
-          });
-      }
-      res.status(200).json({
-          success: true,
-          message: "product deleted successfully",
+    const response = await Product.findByIdAndDelete(req.params.id);
+    if (!response) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
       });
+    }
+    res.status(200).json({
+      success: true,
+      message: "product deleted successfully",
+    });
   } catch (err) {
-      console.error(err);
-      res.status(500).json({
-          success: false,
-          message: "error while deleting the user.",
-          error: err.message,
-      });
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "error while deleting the user.",
+      error: err.message,
+    });
   }
-}
+};
