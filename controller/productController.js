@@ -50,7 +50,7 @@ exports.createProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const { brand, category, color } = req.query;
+    const { brand, category, color, sort } = req.query;
     const queryObject = {};
 
     if (category) {
@@ -63,8 +63,15 @@ exports.getAllProducts = async (req, res) => {
       queryObject.color = { $regex: color, $options: "i" };
     }
 
+    let apiData = Product.find(queryObject);
+
+    if (sort) {
+      let sortFix = sort.replace(","," ")
+      apiData = apiData.sort(sortFix)
+    }
+
     console.log(queryObject);
-    const response = await Product.find(queryObject);
+    const response = await apiData.sort(sort);
     res.status(200).json({
       success: true,
       data: response,
