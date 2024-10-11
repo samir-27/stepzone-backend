@@ -69,6 +69,12 @@ const productSchema = new mongoose.Schema({
   purchases: {
     type:Number
   },
+  review: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Review"
+      }
+  ],
   createdAT: {
     type: Date,
     required: true,
