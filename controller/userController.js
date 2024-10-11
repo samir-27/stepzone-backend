@@ -18,6 +18,7 @@ exports.createUser = [
       if (!validationError.isEmpty()) {
         return res.status(400).json({ errors: validationError.array() });
       }
+      
       const { name, email, password } = req.body;
       const salt = await bcrypt.genSalt(10);
       const securePassword = await bcrypt.hash(password, salt);

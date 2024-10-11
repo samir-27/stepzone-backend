@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
+const adminSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -18,19 +18,20 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
-    default: 'user',
+    default: 'admin',
   },
-  createdAT: {
+  createdAt: {
     type: Date,
     required: true,
     default: Date.now,
   },
-  updatedAT: {
+  updatedAt: {
     type: Date,
     required: true,
     default: Date.now,
   },
 });
 
-module.exports = mongoose.model("User", userSchema);
+adminSchema.index({ email: 1 }, { unique: true });
+
+module.exports = mongoose.model('Admin', adminSchema);

@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const morgan = require('morgan')
 const DBconnection = require('./db')
 
@@ -11,16 +12,18 @@ const port = process.env.PORT || 4000;
 //midleware
 app.use(bodyParser.json())
 app.use(morgan('tiny'))
+app.use(cors())
 
 DBconnection();
 
 const userRoutes  = require("./routes/userRoutes")
 const productRoutes = require("./routes/productRoutes")
 const reviewRoutes = require("./routes/reviewRoutes")
-
-app.use("/api/v1",userRoutes)
-app.use("/api/v1",productRoutes)
-app.use("/api/v1",reviewRoutes)
+const adminRoutes = require("./routes/adminRoutes")
+app.use("/api/v1", userRoutes);
+app.use("/api/v1", adminRoutes); 
+app.use("/api/v1", productRoutes);
+app.use("/api/v1", reviewRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
