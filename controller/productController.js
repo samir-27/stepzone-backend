@@ -1,14 +1,11 @@
 const Product = require("../models/productModel");
+const cloudinary = require("../middleware/cloudinaryConfig");
 
 exports.createProduct = async (req, res) => {
   try {
     const {
       name,
       description,
-      image,
-      subimage1,
-      subimage2,
-      subimage3,
       price,
       brand,
       color,
@@ -18,13 +15,26 @@ exports.createProduct = async (req, res) => {
       purchases,
     } = req.body;
 
+
+    // Ensure images exist before trying to access them
+    const imageFile = req.files['image'] ? req.files['image'][0] : null;
+    const subimage1File = req.files['subimage1'] ? req.files['subimage1'][0] : null;
+    const subimage2File = req.files['subimage2'] ? req.files['subimage2'][0] : null;
+    const subimage3File = req.files['subimage3'] ? req.files['subimage3'][0] : null;
+
+    // Upload to Cloudinary
+    const image = imageFile ? await cloudinary.uploader.upload(imageFile.path) : null;
+    const subimage1 = subimage1File ? await cloudinary.uploader.upload(subimage1File.path) : null;
+    const subimage2 = subimage2File ? await cloudinary.uploader.upload(subimage2File.path) : null;
+    const subimage3 = subimage3File ? await cloudinary.uploader.upload(subimage3File.path) : null;
+
     const response = await Product.create({
       name,
       description,
-      image,
-      subimage1,
-      subimage2,
-      subimage3,
+      image: image ? image.secure_url : null,
+      subimage1: subimage1 ? subimage1.secure_url : null,
+      subimage2: subimage2 ? subimage2.secure_url : null,
+      subimage3: subimage3 ? subimage3.secure_url : null,
       price,
       brand,
       color,
@@ -40,7 +50,6 @@ exports.createProduct = async (req, res) => {
       message: "Product created successfully",
     });
   } catch (err) {
-    console.log(err);
     res.status(500).json({
       success: false,
       message: err.message,
@@ -92,10 +101,6 @@ exports.updateProduct = async (req, res) => {
     const {
       name,
       description,
-      image,
-      subimage1,
-      subimage2,
-      subimage3,
       price,
       brand,
       color,
@@ -114,13 +119,19 @@ exports.updateProduct = async (req, res) => {
       });
     }
 
+    // Check and upload new images if provided
+    const imageFile = req.files["image"] ? req.files["image"][0] : null;
+    const subimage1File = req.files["subimage1"] ? req.files["subimage1"][0] : null;
+    const subimage2File = req.files["subimage2"] ? req.files["subimage2"][0] : null;
+    const subimage3File = req.files["subimage3"] ? req.files["subimage3"][0] : null;
+
     const updatedData = {
       name: name || product.name,
       description: description || product.description,
-      image: image || product.image,
-      subimage1: subimage1 || product.subimage1,
-      subimage2: subimage1 || product.subimage2,
-      subimage1: subimage3 || product.subimage3,
+      image: imageFile ? (await cloudinary.uploader.upload(imageFile.path)).secure_url : product.image,
+      subimage1: subimage1File ? (await cloudinary.uploader.upload(subimage1File.path)).secure_url : product.subimage1,
+      subimage2: subimage2File ? (await cloudinary.uploader.upload(subimage2File.path)).secure_url : product.subimage2,
+      subimage3: subimage3File ? (await cloudinary.uploader.upload(subimage3File.path)).secure_url : product.subimage3,
       price: price || product.price,
       brand: brand || product.brand,
       color: color || product.color,
@@ -131,14 +142,12 @@ exports.updateProduct = async (req, res) => {
       updatedAt: Date.now(),
     };
 
-    product = await Product.findByIdAndUpdate(req.params.id, updatedData, {
-      new: true,
-    });
+    product = await Product.findByIdAndUpdate(req.params.id, updatedData, { new: true });
 
     res.status(200).json({
       success: true,
       data: product,
-      message: "product updated Successfully",
+      message: "Product updated successfully",
     });
   } catch (err) {
     console.log(err);
@@ -148,6 +157,8 @@ exports.updateProduct = async (req, res) => {
     });
   }
 };
+
+
 
 exports.deleteProduct = async (req, res) => {
   try {

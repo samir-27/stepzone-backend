@@ -29,8 +29,8 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   gender: {
-    type:String,
-    enum:['male','female']
+    type: String,
+    enum: ['male', 'female'],
   },
   color: {
     type: String,
@@ -65,26 +65,19 @@ const productSchema = new mongoose.Schema({
   },
   avg_rating: {
     type: Number,
+    min: 1,
+    max: 5,
   },
   purchases: {
-    type:Number
+    type: Number,
+    default: 0,
   },
   review: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Review"
-      }
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Review",
+    },
   ],
-  createdAT: {
-    type: Date,
-    required: true,
-    default: Date.now(),
-  },
-  updatedAT: {
-    type: Date,
-    required: true,
-    default: Date.now(),
-  },
-});
+}, { timestamps: true });
 
-module.exports = mongoose.model("Product",productSchema);
+module.exports = mongoose.model("Product", productSchema);

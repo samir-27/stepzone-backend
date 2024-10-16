@@ -84,6 +84,7 @@ exports.loginUser = [
         success: true,
         authToken: authToken,
         message: "user login successfully",
+        Role:"user"
       });
     } catch (err) {
       console.log(err);
