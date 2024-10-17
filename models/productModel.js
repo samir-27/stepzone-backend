@@ -60,7 +60,7 @@ const productSchema = new mongoose.Schema({
     ],
   },
   size: {
-    type: String,
+    type: [String],
     enum: ["XS", "S", "M", "L", "XL", "2XL"],
   },
   avg_rating: {

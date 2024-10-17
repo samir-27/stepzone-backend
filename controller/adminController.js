@@ -42,11 +42,12 @@ const adminLogin = async (req, res) => {
             return res.status(400).json({ message: 'Invalid password' });
         }
 
-        const token = jwt.sign({ id: admin._id, role: admin.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const authToken = jwt.sign({ id: admin._id, role: admin.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.json({
-            message: 'Login successful',
-            token,
+            success:true,
+            message: 'Admin Login successful',
+            authToken: authToken,
             admin: { id: admin._id, name: admin.name, email: admin.email, role: admin.role }
         });
     } catch (error) {
