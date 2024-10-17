@@ -59,28 +59,36 @@ exports.createProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const { brand, category, color, sort } = req.query;
+    const { brand, category, color, price, sort } = req.query;
     const queryObject = {};
 
     if (category) {
       queryObject.category = { $regex: category, $options: "i" };
     }
+
     if (brand) {
       queryObject.brand = { $regex: brand, $options: "i" };
     }
     if (color) {
       queryObject.color = { $regex: color, $options: "i" };
     }
+    if (price) {
+      const [minPrice, maxPrice] = price.split('-').map(Number);
+      if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+        queryObject.price = { $gte: minPrice, $lte: maxPrice };
+      }
+    }
 
     let apiData = Product.find(queryObject);
 
     if (sort) {
-      let sortFix = sort.replace(","," ")
-      apiData = apiData.sort(sortFix)
+      const sortFix = sort.replace(",", " ");
+      apiData = apiData.sort(sortFix);
     }
 
     console.log(queryObject);
-    const response = await apiData.sort(sort);
+    const response = await apiData;
+    
     res.status(200).json({
       success: true,
       data: response,
