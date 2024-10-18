@@ -1,16 +1,25 @@
-const Review = require("../models/reviewModel");
+const Review = require('../models/reviewModel');
+const Product = require('../models/productModel');
 
 exports.createReview = async (req, res) => {
   try {
     const { stars, description } = req.body;
-    const response = await Review.create({
+    const { productId } = req.params;
+
+    const review = await Review.create({
       stars,
       description,
+      productId,
     });
+
+    await Product.findByIdAndUpdate(productId, {
+      $push: { reviews: review._id }
+    });
+
     res.status(200).json({
       success: true,
-      data: response,
-      message: "review created successfully",
+      data: review,
+      message: "Review created successfully",
     });
   } catch (err) {
     console.log(err);
@@ -21,13 +30,15 @@ exports.createReview = async (req, res) => {
   }
 };
 
+
 exports.getAllReview = async (req, res) => {
   try {
-    const response = await Review.find();
+    const { productId } = req.params;
+    const reviews = await Review.find({ productId });
+
     res.status(200).json({
       success: true,
-      data: response,
-      message: "find all review successfully",
+      data: reviews,
     });
   } catch (err) {
     console.log(err);
