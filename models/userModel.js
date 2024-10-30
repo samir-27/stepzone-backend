@@ -11,15 +11,21 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  phone: {
+    type: String,
+  },
   password: {
     type: String,
     required: true,
     minLength: 6,
   },
+  profile_img: {
+    type: String,
+  },
   role: {
     type: String,
-    enum: ['user', 'admin'],
-    default: 'user',
+    enum: ["user", "admin"],
+    default: "user",
   },
   createdAT: {
     type: Date,
