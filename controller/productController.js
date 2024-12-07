@@ -127,19 +127,10 @@ exports.updateProduct = async (req, res) => {
       });
     }
 
-    // Check and upload new images if provided
-    const imageFile = req.files["image"] ? req.files["image"][0] : null;
-    const subimage1File = req.files["subimage1"] ? req.files["subimage1"][0] : null;
-    const subimage2File = req.files["subimage2"] ? req.files["subimage2"][0] : null;
-    const subimage3File = req.files["subimage3"] ? req.files["subimage3"][0] : null;
-
+    // Remove image-related code
     const updatedData = {
       name: name || product.name,
       description: description || product.description,
-      image: imageFile ? (await cloudinary.uploader.upload(imageFile.path)).secure_url : product.image,
-      subimage1: subimage1File ? (await cloudinary.uploader.upload(subimage1File.path)).secure_url : product.subimage1,
-      subimage2: subimage2File ? (await cloudinary.uploader.upload(subimage2File.path)).secure_url : product.subimage2,
-      subimage3: subimage3File ? (await cloudinary.uploader.upload(subimage3File.path)).secure_url : product.subimage3,
       price: price || product.price,
       brand: brand || product.brand,
       color: color || product.color,
@@ -150,6 +141,7 @@ exports.updateProduct = async (req, res) => {
       updatedAt: Date.now(),
     };
 
+    // Update product without images
     product = await Product.findByIdAndUpdate(req.params.id, updatedData, { new: true });
 
     res.status(200).json({
@@ -165,6 +157,7 @@ exports.updateProduct = async (req, res) => {
     });
   }
 };
+
 
 
 
