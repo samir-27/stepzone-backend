@@ -3,17 +3,34 @@ const Product = require('../models/productModel');
 
 exports.createReview = async (req, res) => {
   try {
-    const { stars, description } = req.body;
+    const { stars, description, userId } = req.body; // Get userId
     const { productId } = req.params;
 
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required" });
+    }
+
+    // Check if the user has already reviewed this product
+    const existingReview = await Review.findOne({ userId, productId });
+
+    if (existingReview) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already reviewed this product",
+      });
+    }
+
+    // Create a new review
     const review = await Review.create({
       stars,
       description,
       productId,
+      userId,
     });
 
+    // Add the review to the product
     await Product.findByIdAndUpdate(productId, {
-      $push: { reviews: review._id }
+      $push: { reviews: review._id },
     });
 
     res.status(200).json({
@@ -21,8 +38,9 @@ exports.createReview = async (req, res) => {
       data: review,
       message: "Review created successfully",
     });
+
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({
       success: false,
       message: err.message,
@@ -31,10 +49,15 @@ exports.createReview = async (req, res) => {
 };
 
 
+
 exports.getAllReview = async (req, res) => {
   try {
     const { productId } = req.params;
-    const reviews = await Review.find({ productId });
+    
+    // Populate the userId field to get name and profile_img from the User collection
+    const reviews = await Review.find({ productId }).populate("userId", "name profile_img");
+    console.log(reviews);
+    
 
     res.status(200).json({
       success: true,
@@ -48,6 +71,7 @@ exports.getAllReview = async (req, res) => {
     });
   }
 };
+
 
 exports.deleteReview = async (req, res) => {
   try {
