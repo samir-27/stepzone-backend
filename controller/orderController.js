@@ -20,13 +20,13 @@ const placeOrder = async (req, res) => {
       address,
       pincode,
     });
-
+    console.log(newOrder)
     // Save to database
     await newOrder.save();
 
     res.status(201).json({ message: 'Order placed successfully', order: newOrder });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: error, error: error.message });
   }
 };
 
